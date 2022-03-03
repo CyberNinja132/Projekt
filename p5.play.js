@@ -35,7 +35,7 @@ factory(root.p5);
 //                         initialization
 // =============================================================================
 
-var DEFAULT_FRAME_RATE = 30;
+var DEFAULT_FRAME_RATE = 60;
 
 // This is the new way to initialize custom p5 properties for any p5 instance.
 // The goal is to migrate lazy P5 properties over to this method.
