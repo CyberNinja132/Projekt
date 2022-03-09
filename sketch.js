@@ -4,6 +4,8 @@ var coin,coin1,coin2,coin3, coinImg;
 var mainArea, mapImg, map;
 var obstacle, obstacleImg;
 
+var music, hurt, clink;
+
 var Escape;
 
 var scoreBoard = 0;
@@ -11,6 +13,8 @@ var scoreBoard = 0;
 var gameState = 0;
 
 var X = 900;
+
+var arr;
 
 /*const Bodies = Matter.Bodies;
 const Engine = Matter.Engine;
@@ -20,12 +24,18 @@ function preload(){
   playerImg = loadImage("assets/Player.png");
   enemyImg = loadImage("assets/Enemy.png");
   coinImg = loadImage("assets/Points.png");
-  mapImg = loadImage("assets/Map.png")
+  mapImg = loadImage("assets/Map.png");
+
+  music = loadSound("assets/sounds/001 - Stardew Valley Overture.mp3");
+  hurt = loadSound("assets/sounds/hurt.mp3");
+  clink = loadSound("assets/sounds/Coin.mp3");
 }
 
 function setup(){
   //canvas
       createCanvas(1800,857);
+
+          music.play();
         
 
           //Engine Start
@@ -44,41 +54,54 @@ function setup(){
       player.scale = 0.15;
       player.debug = false;
       player.setCollider("Circle",0,0,45);
-
-      //Enemy
-      enemy = createSprite(900,458.5,20,20);
-      enemy.addImage("enemy",enemyImg);
-      enemy.scale = 0.15;
-
-      //coins
+    
       /*coin = createSprite(200,200,20,20);
       coin.addImage("coin",coinImg);
       coin.scale = 0.09;*/
 
+      //groups
       coinGroup = new Group();
+      enemyGroup = new Group();
 
-      for( var i = 0 ; i < 20 ; i++){
-
+       //coins
+      /*for(var i = 0; i<5;i++){
         coin = createSprite(random(1800,0),random(857.5,8),20,20);
+        //console.log(coin)
         coin.addImage("coin",coinImg);
         coin.scale = 0.09;
-        coinGroup.add(coin);
+      }*/
+        
+        
+        
 
+
+      //Enemy
+      for( var i =0; i <10 ; i++){
+        enemy = createSprite(random(1800,0),random(857.5,8),20,20);
+        enemy.addImage("enemy",enemyImg);
+        enemy.scale = 0.15;
+        enemyAI();
+        enemyGroup.add(enemy);
+        console.log(enemyGroup)
+        
       }
 
-      /*
-      coin1 = createSprite(300,200,20,20);
+    
+
+      
+      coin1 = createSprite(random(1800,0),random(857.5,8),20,20);
       coin1.addImage("coin",coinImg);
       coin1.scale = 0.09;
 
-      coin2 = createSprite(400,200,20,20);
+      coin2 = createSprite(random(1800,0),random(857.5,8),20,20);
       coin2.addImage("coin",coinImg);
       coin2.scale = 0.09;
 
-      coin3 = createSprite(500,200,20,20);
+      coin3 = createSprite(random(1800,0),random(857.5,8),20,20);
       coin3.addImage("coin",coinImg);
       coin3.scale = 0.09;
-      */
+    
+      arr = [coin1,coin2,coin3];
 
       
       
@@ -92,6 +115,7 @@ function draw(){
   //console.log(player.y);
   textSize(50);
   fill("red");
+  textFont('Impact');
   text("SCORE:"+scoreBoard,25,60);
 
 
@@ -119,16 +143,29 @@ function draw(){
 
   //enemy.velocityX = 1;
 
-  if(scoreBoard === 1000){
-       Escape = createSprite(200,200,50,50);
+  if(player.isTouching(enemy)){
+    hurt.play();
   }
+
+  if(scoreBoard === 300){
+       Escape = createSprite(200,200,50,50);
+       if(Escape.isTouching(player)){
+         Escape.shapeColor = "red";
+       }
+       
+  }
+
+  /*if(player.isTouching(arr)){
+    arr.pop();
+  }*/
 
   //FUNCTIONS
   playerMove();
   enemyAI();
   Edges();
-  scoreboard();
 
+  scoreboard();  
+    
   drawSprites();
 }
 
@@ -224,10 +261,14 @@ function Edges(){
 }
 
 function scoreboard(){
-  if(player.isTouching(coinGroup)){
-    scoreBoard = 1000;
-    coinGroup.destroyEach();
+ for(var i=0; i<arr.length; i++){
+    if(player.isTouching(arr[i])){
+      scoreBoard += 100;
+      arr[i].remove();
+      clink.play();
+    }
   }
+  
 }
 
 
